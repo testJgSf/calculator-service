@@ -1,9 +1,10 @@
 var express = require('express');
 var router = express.Router();
+const { processOperation } = require('../../business/calculatorController');
 
-/* GET home page. */
-router.get('/', function(req, res) {
-  res.status(httpOk).json({message: 'hello'})
+router.post('/calculate', function(req, res) {
+  let result = processOperation(req, res);
+  res.status(result.code).json(result);
 });
 
 module.exports = router;
