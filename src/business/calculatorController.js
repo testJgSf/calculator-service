@@ -8,32 +8,27 @@ const { subtractionRequest } = require('../data/subtractionRepository');
 
 const processOperation = async (operation) => {
     let operations = parseOperationToArray(operation);
-    operations = sanitizeNegativeValues(operations);
+    console.log('Original');
+    console.log(operations);
+    console.log('Solucion: *****');
     let pivot = findPivot(operations);
     while(pivot.operator) {
-        operations = await processOperationA(operations,pivot);
+        operations = await solveOperation(operations,pivot);
         pivot = findPivot(operations);
         console.log(operations);
     }
+    console.log(operations);
     return {code: httpOk, message: 'Queued'};
 };
 
 const parseOperationToArray = (operation) => {
-    let expression = operation;
-    let copy = expression;
-    expression = expression.replace(/[0-9]+/g, "#").replace(/[\(|\|\.)]/g, "");
-    let numbers = copy.split(/[^0-9\.]+/);
-    let operators = expression.split("#").filter(n => n);
-    let operationArray = [];
-    for(let i = 0; i < numbers.length; i++){
-        operationArray.push(numbers[i]);
-        if (i < operators.length) operationArray.push(operators[i]);
-    }
-    return operationArray;
+    operation = operation.replace(/^-|([+\-*/])-/g, "$1#")
+        .split(/([+\-*/])/)
+        .map(e => e.replace("#", "-"));
+    return operation;
 };
 
 const findPivot = (operation) => {
-    console.log(operation);
     let indexMul = operation.indexOf('*');
     let indexDiv = operation.indexOf('/');
     let indexSub = operation.indexOf('-');
@@ -58,21 +53,17 @@ const findPivot = (operation) => {
     return pivot;
 };
 
-const sanitizeNegativeValues = (operation) => {
-    if (!operation[0]) {
-        operation.splice(0, 2); //removes firsts 2 values from array
-        operation[0]= `-${operation[0]}`; // add negative symbol to the first element
-    }
-    return operation
-};
-
-const processOperationA = async (operations, pivot) => {
-    let toSolve = operations.splice(pivot.index-1, 3);
+const solveOperation = async (operations, pivot) => {
+    const toSolve = operations.splice(pivot.index-1, 3);
     let result = eval(toSolve.join(''));
     operations.splice(pivot.index-1,0,result);
-    resolve (operations);
+    return (operations);
 
 };
+
+const entrada = '12/9';
+processOperation(entrada);
+
 
 module.exports = { processOperation };
 
