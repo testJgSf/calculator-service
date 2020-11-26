@@ -34,6 +34,7 @@ jobs:
 
   deploydev:
     runs-on: ubuntu-latest
+    needs: [setenvironmet]
     steps:
     - uses: actions/checkout@v1
     - name: Deploy to Google App Engine
