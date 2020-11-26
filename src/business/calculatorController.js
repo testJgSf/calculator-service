@@ -8,7 +8,7 @@ const main = async (operationList)=> {
     }
     let response = await Promise.allSettled(results).then((results) => results);
     response = response.filter((res) => res.value).map(res => res.value);
-    return {code:  200, message: response};
+    return {code:  httpOk, results: response};
 
 };
 
