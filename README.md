@@ -3,13 +3,14 @@
 ## Configuración inicial del proyecto
 
 ### Sin Docker
-- Se require tener instalado nodeJs v12.13.0
+- Se requiere tener instalado nodeJs v12.13.0
 - Instalar dependencias con `npm i`
 - Crear archivo .env (Ejemplo en el archivo **.env.develop**)
 - Ejecutar el comando `npm start`
 
 ### Con Docker 
-...
+- Construir imagen con el comando docker run joseg/calculator-service
+- 
 
 ## Contratos
 
