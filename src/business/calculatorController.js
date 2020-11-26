@@ -1,24 +1,29 @@
-const { sumRequest } = require('../data/sumRepository');
-const { multiplicationRequest } = require('../data/multiplicationRepository');
-const { divisionRequest } = require('../data/divisionRepository');
-const { subtractionRequest } = require('../data/subtractionRepository');
-
 //TODO::VERIFICAR QUE LA OPERACION NO COMIENCE CON *, + o /
+const { requestOperation } = require('../data/repository/operationsRepository');
 
+const main = async (operationList)=> {
+    let results = [];
+    for (let index in operationList) {
+        results.push(processOperation(operationList[index]));
+    }
+    let response = await Promise.allSettled(results).then((results) => results);
+    response = response.filter((res) => res.value).map(res => res.value);
+    return {code:  200, message: response};
+
+};
 
 const processOperation = async (operation) => {
-    let operations = parseOperationToArray(operation);
-    console.log('Original');
-    console.log(operations);
-    console.log('Solucion: *****');
-    let pivot = findPivot(operations);
-    while(pivot.operator) {
-        operations = await solveOperation(operations,pivot);
-        pivot = findPivot(operations);
-        console.log(operations);
+    try {
+        let operations = parseOperationToArray(operation);
+        let pivot = findPivot(operations);
+        while(pivot.operator) {
+            operations = await solveOperation(operations,pivot);
+            pivot = findPivot(operations);
+        }
+        return `${operation.replace(/\*/g, 'x')}=${operations}`
+    } catch (e) {
+        return false;
     }
-    console.log(operations);
-    return {code: httpOk, message: 'Queued'};
 };
 
 const parseOperationToArray = (operation) => {
@@ -54,16 +59,15 @@ const findPivot = (operation) => {
 };
 
 const solveOperation = async (operations, pivot) => {
-    const toSolve = operations.splice(pivot.index-1, 3);
-    let result = eval(toSolve.join(''));
-    operations.splice(pivot.index-1,0,result);
-    return (operations);
-
+    try {
+        const toSolve = operations.splice(pivot.index-1, 3);
+        let result = await requestOperation(pivot.operator, toSolve);
+        operations.splice(pivot.index-1,0,result);
+        return (operations);
+    } catch (e) {
+        throw e;
+    }
 };
 
-const entrada = '12/9';
-processOperation(entrada);
-
-
-module.exports = { processOperation };
+module.exports = { main };
 
