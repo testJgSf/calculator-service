@@ -1,4 +1,4 @@
-//TODO::VERIFICAR QUE LA OPERACION NO COMIENCE CON *, + o /
+
 const { requestOperation } = require('../data/repository/operationsRepository');
 
 const main = async (operationList)=> {
